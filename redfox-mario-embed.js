@@ -180,11 +180,14 @@
     function drawGround(game, camera) {
       for (const tile of game.ground) {
         const x = Math.floor(tile.x-camera); if (x < -16 || x > W) continue;
-        ctx.fillStyle = palette.soil; ctx.fillRect(x,208,16,32);
-        ctx.fillStyle = palette.soil2; ctx.fillRect(x,208,16,3);
-        ctx.fillStyle = '#71331f'; ctx.fillRect(x,211,16,1);
-        ctx.fillStyle = '#e18a45'; ctx.fillRect(x+2,218,5,1); ctx.fillRect(x+10,226,5,1); ctx.fillRect(x+5,235,5,1);
-        ctx.fillStyle = '#73351f'; ctx.fillRect(x+8,214,1,5); ctx.fillRect(x+3,228,1,6);
+        const gy=tile.y, gh=tile.h;
+        ctx.fillStyle = palette.soil; ctx.fillRect(x,gy,16,gh);
+        ctx.fillStyle = palette.soil2; ctx.fillRect(x,gy,16,3);
+        ctx.fillStyle = '#71331f'; ctx.fillRect(x,gy+3,16,1);
+        for(let yy=gy+9;yy<gy+gh;yy+=10){
+          ctx.fillStyle = '#e18a45'; ctx.fillRect(x+2,yy,5,1); ctx.fillRect(x+10,yy+4,5,1);
+          ctx.fillStyle = '#73351f'; ctx.fillRect(x+8,yy+1,1,5); ctx.fillRect(x+3,yy+5,1,4);
+        }
       }
     }
     function drawBlock(block, camera) {
