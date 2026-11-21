@@ -109,21 +109,16 @@ window.input={isDown:key=>!!pressed[key.toUpperCase()],reset:()=>Object.keys(pre
       const fx=Math.round(this.pos[0]-8-cameraX);
       const fy=Math.round(this.pos[1]-cameraY);
       c.save();
-      c.beginPath();
-      c.moveTo(fx,fy);
-      c.lineTo(fx+48,fy+12);
-      c.lineTo(fx,fy+48);
-      c.closePath();
       c.fillStyle='#ffffff';
-      c.fill();
+      c.fillRect(fx,fy,48,36);
       c.strokeStyle='#26334a';
       c.lineWidth=1.5;
-      c.stroke();
+      c.strokeRect(fx,fy,48,36);
       c.fillStyle='#17243a';
       c.font='bold 11px monospace';
       c.textAlign='center';
       c.textBaseline='middle';
-      c.fillText('RGB',fx+24,fy+21);
+      c.fillText('RGB',fx+24,fy+18);
       c.restore();
       return;
     }
