@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+  <meta name="theme-color" content="#07152f">
+  <title>RED FOX — SUPER MARIO WORLD 1-1</title>
+  <link rel="stylesheet" href="mario-world-1-1.css">
+</head>
+<body>
+  <main class="cabinet">
+    <header class="topbar">
+      <div class="brand">RED FOX <span>ARCADE</span></div>
+      <div class="game-name"><small>КЛАССИЧЕСКИЙ УРОВЕНЬ</small><strong>SUPER MARIO · WORLD 1-1</strong></div>
+      <div class="edition">SPECIAL EDITION</div>
+    </header>
+    <section class="scoreboard" aria-label="Игровая статистика">
+      <div class="stat"><small>СЧЁТ</small><strong id="score">000000</strong></div>
+      <div class="stat"><small>МОНЕТЫ</small><strong id="coins">× 00</strong></div>
+      <div class="stat"><small>МИР</small><strong>1-1</strong></div>
+      <div class="stat"><small>ЖИЗНИ</small><strong id="lives">× 03</strong></div>
+      <div class="stat time-stat"><small>ВРЕМЯ</small><strong id="time">400</strong></div>
+    </section>
+    <section class="screen-frame">
+      <div class="screen-caption"><span>ИГРОВОЕ ПОЛЕ</span><span id="status">ГОТОВ К ИГРЕ</span></div>
+      <div class="canvas-wrap"><canvas id="game" width="768" height="432" aria-label="Игра Super Mario World 1-1"></canvas>
+        <div class="overlay" id="overlay">
+          <div class="overlay-panel"><div class="pixel-mark">★</div><h1 id="overlay-title">WORLD 1-1</h1><p id="overlay-text">ПРОЙДИ УРОВЕНЬ И ДОБЕРИСЬ ДО ЗАМКА</p><button id="start">НАЧАТЬ ИГРУ</button></div>
+        </div>
+      </div>
+      <div class="screen-bottom"><span>8-BIT PLATFORM CHALLENGE</span><span>NO MUSIC · NO SOUND</span></div>
+    </section>
+    <footer class="controls">
+      <div class="control-help"><b>УПРАВЛЕНИЕ</b><span>← → ДВИЖЕНИЕ</span><span>ПРОБЕЛ / ↑ ПРЫЖОК</span><span>SHIFT — БЕГ</span></div>
+      <div class="touch-controls"><button data-key="left" aria-label="Влево">◀</button><button data-key="right" aria-label="Вправо">▶</button><button data-key="jump" aria-label="Прыжок">A</button><button data-key="run" aria-label="Бег">B</button></div>
+      <div class="gold-note">ВПЕРЁД К ПОБЕДЕ</div>
+    </footer>
+  </main>
+  <script src="mario-world-1-1.js"></script>
+</body>
+</html>
