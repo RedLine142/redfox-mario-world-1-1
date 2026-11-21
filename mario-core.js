@@ -43,11 +43,11 @@
         blocks.push({x:px,y:py,w:TILE,h:TILE,kind,reward,used:false,broken:false,metatile:id});
       } else if (id===97) {
         stairs.push({x:px,y:py,w:TILE,h:TILE,kind:'stair',metatile:id});
-      } else if (id>=16 && id<=21) {
+      } else if (id===16 || id===18 || id===20) {
         const key=x;
         if (!pipeCells.has(key)) pipeCells.set(key,{x:px,top:py,bottom:py,kind:'pipe',enterable:false});
         const p=pipeCells.get(key); p.top=Math.min(p.top,py);p.bottom=Math.max(p.bottom,py);
-      } else if (id!==0 && id!==84 && id!==36 && id!==37) {
+      } else if (id!==0 && id!==84 && id!==36 && id!==37 && id!==17 && id!==19 && id!==21) {
         scenery.push({x:px,y:py,w:TILE,h:TILE,id});
       }
     }
