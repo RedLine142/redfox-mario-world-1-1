@@ -57,10 +57,8 @@ class PowerUp extends Trait {
         other.size.y = 32;
         other.pos.y -= 16;
       }
-      other.sounds.add('powerup');
     } else if (this.kind === 'star') {
       other.starTime = 10;
-      other.sounds.add('powerup');
     }
   }
   obstruct(entity, side) {
@@ -131,8 +129,10 @@ TileCollider.prototype.handle = function(index, entity, match, resolver, gameCon
   const isMario = entity.traits.has(Player);
   const fromBelow = index === 1 && entity.vel.y < 0;
   if (isMario && match.tile.behavior === 'brick' && !entity.powerLevel) {
+    const oldBehavior = match.tile.behavior;
     match.tile.behavior = 'ground';
     originalTileHandle.call(this, index, entity, match, resolver, gameContext, level);
+    match.tile.behavior = oldBehavior;
     return;
   }
   const isQuestion = isMario && fromBelow && match.tile.style === 'chance' && !match.tile.used;
@@ -180,7 +180,6 @@ async function main(canvas) {
       mario.size.y = 16;
       mario.pos.y += 16;
       mario.hitInvulnerable = 1.5;
-      mario.sounds.add('powerdown');
       return;
     }
     originalKill();
@@ -191,7 +190,6 @@ async function main(canvas) {
       smallDraw.call(this, context);
       return;
     }
-    const go = this.traits.get((this.traits.get.constructor && this.traits.get.constructor) || Object);
     let sx = 112;
     if (this.traits.get) {
       const jump = [...this.traits.values()].find(t => 'falling' in t);
