@@ -8,7 +8,7 @@ const floorY=360;
 const solids=[],bricks=[],question=[],pipes=[],gaps=[[1850,1990],[3150,3310],[4420,4570],[5200,5350]];
 const enemies=[],coinItems=[];
 function rect(x,y,w,h,type='ground'){solids.push({x,y,w,h,type});}
-function block(x,y,type='brick'){(type==='question'?question:bricks).push({x,y,w:24,h:24,used:false,type});}
+function block(x,y,type='brick'){(type==='question'?question:bricks).push({x,y,w:24,h:24,used:false,type});rect(x,y,24,24,'block');}
 function pipe(x,h){pipes.push({x,y:floorY-h,w:48,h});rect(x,floorY-h,48,h,'pipe');}
 function inGap(x){return gaps.some(g=>x>=g[0]&&x<g[1]);}
 for(let x=0;x<worldW;x+=24)if(!inGap(x+12))rect(x,floorY,24,72,'ground');
@@ -28,7 +28,7 @@ ui.start.addEventListener('click',()=>{if(state==='ready'||state==='over'||state
 function updateUI(){ui.score.textContent=String(score).padStart(6,'0');ui.coins.textContent='× '+String(coins).padStart(2,'0');ui.lives.textContent='× 0'+lives;ui.time.textContent=Math.max(0,Math.ceil(seconds));}
 function die(){if(player.invuln>0||state!=='playing')return;lives--;updateUI();if(lives<=0){end(false);return;}player.dead=true;setTimeout(()=>{if(state!=='playing')return;resetPlayer();},650);}
 function end(win){state=win?'won':'over';ui.overlay.classList.remove('hidden');ui.title.textContent=win?'УРОВЕНЬ ПРОЙДЕН!':'ИГРА ОКОНЧЕНА';ui.message.textContent=win?'ТЫ ДОБРАЛСЯ ДО ЗАМКА. ОТЛИЧНАЯ РАБОТА!':'ПОПРОБУЙ ЕЩЁ РАЗ И ПРОЙДИ WORLD 1-1';ui.start.textContent='ИГРАТЬ СНОВА';ui.status.textContent=win?'ПОБЕДА':'ИГРА ОКОНЧЕНА';}
-function moveAxis(obj,dx,dy){obj.x+=dx;for(const s of solids){if(!hit(obj,s))continue;if(dx>0)obj.x=s.x-obj.w;else if(dx<0)obj.x=s.x+s.w;}obj.y+=dy;obj.onGround=false;for(const s of solids){if(!hit(obj,s))continue;if(dy>0){obj.y=s.y-obj.h;obj.vy=0;obj.onGround=true;}else if(dy<0){obj.y=s.y+s.h;obj.vy=0;}}}
+function moveAxis(obj,dx,dy){obj.x+=dx;for(const s of solids){if(!hit(obj,s))continue;if(dx>0)obj.x=s.x-obj.w;else if(dx<0)obj.x=s.x+s.w;}obj.y+=dy;obj.onGround=false;for(const s of solids){if(!hit(obj,s))continue;if(dy>0){obj.y=s.y-obj.h;obj.vy=0;obj.onGround=true;}else if(dy<0){if(s.type==='block'){const q=question.find(v=>v.x===s.x&&v.y===s.y);if(q&&!q.used){q.used=true;score+=200;coins++;} }obj.y=s.y+s.h;obj.vy=0;}}}
 function update(dt){if(state!=='playing')return;tick+=dt;seconds-=dt/60;if(seconds<=0){seconds=0;die();}if(player.dead)return;if(player.invuln>0)player.invuln-=dt;
 const p=player,acc=keys.run?.55:.38,max=keys.run?4.1:2.8;
 if(keys.left){p.vx-=acc*dt;p.face=-1;}if(keys.right){p.vx+=acc*dt;p.face=1;}if(!keys.left&&!keys.right)p.vx*=Math.pow(.78,dt);
