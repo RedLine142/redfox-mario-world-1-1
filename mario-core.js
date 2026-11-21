@@ -76,7 +76,7 @@
       player: { x: 32, y: FLOOR - 16, w: 12, h: 16, vx: 0, vy: 0, onGround: true, power: 'small', facing: 1, dead: false, invulnerable: 0, coyote: 0, deathFrames: 0 },
       blocks: level.blocks, ground: level.ground, pipes: level.pipes, stairs: level.stairs,
       coinsWorld: level.coins, enemies: level.enemies, powerups: [], fireballs: [], fireCooldown: 0, particles: [],
-      pits: level.pits, flagpole: level.flagpole, castle: level.castle, deathHandled: false, prevDown: false, bonusUsed: false
+      pits: level.pits, flagpole: level.flagpole, castle: level.castle, deathHandled: false, prevDown: false, prevJump: false, jumpBuffer: 0, bonusUsed: false
     };
     game.mainArea = { ground:game.ground, blocks:game.blocks, pipes:game.pipes, stairs:game.stairs, coinsWorld:game.coinsWorld, enemies:game.enemies, powerups:game.powerups, pits:game.pits, flagpole:game.flagpole, castle:game.castle };
     return game;
@@ -107,29 +107,50 @@
     return game.ground.concat(game.pipes, game.stairs, game.blocks.filter(b => !b.broken));
   }
   function collideX(game, p, dx) {
-    p.x += dx;
-    for (const s of solids(game)) if (intersects(p,s)) {
-      if (dx > 0) p.x = s.x - p.w;
-      else if (dx < 0) p.x = s.x + s.w;
-      p.vx = 0;
+    const steps = Math.max(1, Math.ceil(Math.abs(dx) / 4));
+    const part = dx / steps;
+    const all = solids(game);
+    for (let n = 0; n < steps; n++) {
+      p.x += part;
+      for (const s of all) if (intersects(p, s)) {
+        if (part > 0) p.x = s.x - p.w;
+        else if (part < 0) p.x = s.x + s.w;
+        p.vx = 0;
+      }
+    }
+  }
+  function hitBlock(game, p, b) {
+    if (!b || b.broken || b.kind === 'hidden' && b.used) return;
+    if (b.kind === 'brick' && p.power !== 'small' && b.reward !== 'tencoin') {
+      b.broken = true; game.score += 50;
+      game.particles.push({x:b.x,y:b.y,vx:-1.2,vy:-2,life:18});
+      game.particles.push({x:b.x+8,y:b.y,vx:1.2,vy:-2.5,life:18});
+      return;
+    }
+    if (b.used) return;
+    b.used = true;
+    if (b.reward === 'coin' || b.reward === 'tencoin') {
+      game.coins++; game.score += 200;
+      if (b.reward === 'tencoin') { b.used = false; b.hits = (b.hits || 0) + 1; if (b.hits >= 10) b.used = true; }
+    } else if (b.reward === 'mushroom' || b.reward === 'flower') {
+      game.powerups.push({x:b.x,y:b.y-16,w:16,h:16,vx:0.65,vy:-1.8,type:p.power==='small'?'mushroom':'flower',active:true});
+    } else if (b.reward === 'star' || b.reward === '1up') {
+      game.powerups.push({x:b.x,y:b.y-16,w:16,h:16,vx:0.65,vy:-1.8,type:b.reward,active:true});
     }
   }
   function collideY(game, p, dy) {
-    p.y += dy; p.onGround = false;
-    for (const s of solids(game)) if (intersects(p,s)) {
-      if (dy > 0) { p.y = s.y - p.h; p.vy = 0; p.onGround = true; }
-      else if (dy < 0) {
-        p.y = s.y + s.h; p.vy = 0;
-        const b = game.blocks.find(block => block === s);
-        if (b && b.kind === 'brick' && p.power !== 'small' && b.reward !== 'tencoin') {
-          if (!b.broken) { b.broken = true; game.score += 50; }
-        } else if (b && !b.used && !b.broken) {
-          b.used = true;
-          if (b.reward === 'coin') { game.coins++; game.score += 200; }
-          else if (b.reward === 'tencoin') { b.used = false; b.hits = (b.hits || 0) + 1; game.coins++; game.score += 200; if (b.hits >= 10) b.used = true; }
-          else if (b.reward === 'mushroom' || b.reward === 'flower') game.powerups.push({ x:b.x, y:b.y-16, w:16, h:16, vx:0.7, vy:0, type:p.power === 'small' ? 'mushroom' : 'flower', active:true });
-          else if (b.reward === 'star') game.powerups.push({ x:b.x, y:b.y-16, w:16, h:16, vx:0.7, vy:0, type:'star', active:true });
-          else if (b.reward === '1up') game.powerups.push({ x:b.x, y:b.y-16, w:16, h:16, vx:0.7, vy:0, type:'1up', active:true });
+    const steps = Math.max(1, Math.ceil(Math.abs(dy) / 4));
+    const part = dy / steps;
+    const all = solids(game);
+    p.onGround = false;
+    for (let n = 0; n < steps; n++) {
+      p.y += part;
+      for (const s of all) if (intersects(p, s)) {
+        if (part > 0) {
+          p.y = s.y - p.h; p.vy = 0; p.onGround = true;
+        } else if (part < 0) {
+          p.y = s.y + s.h; p.vy = 0;
+          hitBlock(game, p, game.blocks.find(block => block === s));
         }
       }
     }
@@ -168,19 +189,27 @@
         game.fireballs.push({ x:p.facing>0?p.x+p.w:p.x-8, y:p.y+14, w:8, h:8, vx:p.facing*3.2, vy:-1.2, alive:true });
         game.fireCooldown = 18;
       }
-      const accel = input.run ? 0.22 : 0.16;
-      const max = input.run ? 3.0 : 1.85;
+      const accel = input.run ? 0.105 : 0.075;
+      const max = input.run ? 2.75 : 1.65;
       if (input.left) { p.vx -= accel; p.facing = -1; }
       if (input.right) { p.vx += accel; p.facing = 1; }
-      if (!input.left && !input.right) p.vx *= 0.78;
+      if (!input.left && !input.right) {
+        p.vx *= p.onGround ? 0.72 : 0.94;
+        if (Math.abs(p.vx) < 0.035) p.vx = 0;
+      }
       p.vx = Math.max(-max, Math.min(max, p.vx));
       const jumpPressed = !!input.jump && !game.prevJump;
-      if (jumpPressed && (p.onGround || p.coyote > 0)) { p.vy = -5.2; p.onGround = false; p.coyote = 0; }
-      else if (p.onGround) p.coyote = 6;
+      if (jumpPressed) game.jumpBuffer = 7;
+      else game.jumpBuffer = Math.max(0, game.jumpBuffer - 1);
+      if (p.onGround) p.coyote = 7;
       else p.coyote = Math.max(0, p.coyote - 1);
-      if (input.jump && p.vy < -1.2) p.vy -= 0.045;
+      if (game.jumpBuffer > 0 && (p.onGround || p.coyote > 0)) {
+        p.vy = p.power === 'small' ? -5.25 : -5.45;
+        p.onGround = false; p.coyote = 0; game.jumpBuffer = 0;
+      }
+      if (!input.jump && p.vy < -1.4) p.vy *= 0.58;
       game.prevJump = !!input.jump;
-      p.vy = Math.min(6.5, p.vy + 0.24);
+      p.vy = Math.min(6.2, p.vy + (p.vy < 0 ? 0.23 : 0.34));
       collideX(game, p, p.vx);
       collideY(game, p, p.vy);
       if (p.y > 250 || game.pits.some(pit => p.x + p.w > pit.x && p.x < pit.x + pit.w && p.y + p.h >= FLOOR + 2)) { loseLife(game); continue; }
