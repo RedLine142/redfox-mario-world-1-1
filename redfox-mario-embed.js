@@ -23,13 +23,13 @@ canvas{display:block;width:min(100vw,calc((100vh - 96px)*1.0666667));height:auto
 #launch strong{font-size:clamp(25px,5vw,44px);letter-spacing:3px;text-shadow:3px 3px #9b2d24}
 #launch span{font-size:11px;letter-spacing:2px;color:#e3c56f}
 #launch em{margin-top:9px;padding:12px 22px;border:1px solid #ffe8a2;background:#c99b42;color:#101d30;font-style:normal;font-weight:bold;letter-spacing:2px}
-#controls{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;height:62px;min-height:62px;padding:6px 8px;background:#09182a;border-top:1px solid #8e713c;color:#e8d5a5}
+#controls{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;height:62px;min-height:62px;padding:6px 12px;background:#09182a;border-top:1px solid #8e713c;color:#e8d5a5}#controls .pad{display:flex;align-items:center;gap:10px}#controls .actions{display:flex;align-items:center;gap:10px}
 #controls .hint{margin-right:auto;font:10px/1.5 Arial,sans-serif;letter-spacing:.5px}
-#controls button{width:46px;height:44px;border:1px solid #c5a35d;border-radius:4px;background:linear-gradient(#25496d,#10253e);color:#fff0c8;font-size:17px;font-weight:bold;touch-action:none;user-select:none;-webkit-user-select:none}
+#controls button{width:46px;height:44px;border:1px solid #c5a35d;border-radius:6px;background:linear-gradient(#25496d,#10253e);color:#fff0c8;font-size:19px;font-weight:bold;touch-action:none;user-select:none;-webkit-user-select:none}#controls button.action{min-width:68px;padding:0 12px;font-size:12px;letter-spacing:.5px}
 #controls button.action{background:linear-gradient(#9d372d,#5d1e1a);border-color:#e1a06c}
 #game-over{display:none;position:fixed;z-index:10;inset:0;align-items:center;justify-content:center;flex-direction:column;gap:14px;background:#000e;color:#fff0c8;font:bold 24px Arial,sans-serif;letter-spacing:3px;text-align:center}
 #game-over button{padding:12px 22px;border:1px solid #ffe8a2;background:#c99b42;color:#101d30;font-weight:bold;letter-spacing:2px}
-@media(max-width:600px){#topbar{height:30px;min-height:30px;font-size:10px}canvas{width:min(100vw,calc((100vh - 88px)*1.0666667));max-height:calc(100vh - 88px)}#launch{inset:30px 0 58px}#controls{height:58px;min-height:58px;gap:5px;padding:5px}#controls .hint{font-size:8px}#controls button{width:39px;height:39px;font-size:15px}}
+@media(max-width:600px){#topbar{height:30px;min-height:30px;font-size:10px}canvas{width:min(100vw,calc((100vh - 142px)*1.0666667));max-height:calc(100vh - 142px)}#launch{inset:30px 0 104px}#controls{height:104px;min-height:104px;gap:8px;padding:10px 12px;justify-content:space-between}#controls .hint{display:none}#controls .pad,#controls .actions{gap:9px}#controls button{width:64px;height:62px;font-size:25px;border-radius:9px;box-shadow:0 3px 0 #050d18}#controls button.action{min-width:82px;height:62px;padding:0 8px;font-size:13px;letter-spacing:0}#controls button:active{transform:translateY(2px);box-shadow:0 1px 0 #050d18}}
 #rf-finale{display:none;position:absolute;z-index:9;inset:34px 0 62px;align-items:center;justify-content:center;flex-direction:column;gap:24px;background:#7974ff;color:#fff;font:bold 18px monospace;text-align:center;text-shadow:2px 2px #17234a}
 #rf-finale .pole{position:relative;width:12px;height:210px;background:linear-gradient(90deg,#777,#fff 45%,#777);border-radius:3px;box-shadow:2px 2px 0 #333}
 #rf-finale .banner{position:absolute;left:10px;top:14px;width:150px;height:78px;border:3px solid #18243a;background:linear-gradient(to bottom,#ed2436 0 33.33%,#16c85a 33.33% 66.66%,#176bff 66.66% 100%);display:flex;align-items:center;justify-content:center;color:#fff;font:bold 28px monospace;letter-spacing:2px;text-shadow:2px 2px #111;box-shadow:3px 3px 0 #18243a}
@@ -37,18 +37,13 @@ canvas{display:block;width:min(100vw,calc((100vh - 96px)*1.0666667));height:auto
 </style></head><body>
 <div id="topbar"><span>RED FOX ARCADE</span><span>WORLD 1-1</span><span class="lives" id="rf-lives">MARIO × 3</span></div>
 <div id="game-area"></div>
-<button id="launch" type="button"><span>RED FOX ARCADE</span><strong>SUPER MARIO BROS.</strong><em>НАЧАТЬ ИГРУ</em><span>← → ДВИЖЕНИЕ · ПРОБЕЛ ПРЫЖОК · SHIFT БЕГ</span></button>
-<div id="controls"><div class="hint">← → движение<br>ПРОБЕЛ прыжок · SHIFT бег</div>
-<button type="button" data-key="ArrowLeft" aria-label="Влево">◀</button>
-<button type="button" data-key="ArrowRight" aria-label="Вправо">▶</button>
-<button type="button" class="action" data-key="Space" aria-label="Прыжок">␣</button>
-<button type="button" class="action" data-key="ShiftLeft" aria-label="Бег">⇧</button>
-<button type="button" data-key="ArrowDown" aria-label="Вниз">▼</button></div>
+<button id="launch" type="button"><span>RED FOX ARCADE</span><strong>SUPER MARIO BROS.</strong><em>НАЧАТЬ ИГРУ</em><span>← → ДВИЖЕНИЕ · ПРОБЕЛ ПРЫЖОК · CTRL БЕГ</span></button>
+<div id="controls"><div class="pad"><button type="button" data-key="ArrowLeft" aria-label="Влево">◀</button><button type="button" data-key="ArrowRight" aria-label="Вправо">▶</button></div><div class="hint">← → движение<br>ПРОБЕЛ прыжок · CTRL бег</div><div class="actions"><button type="button" class="action" data-key="Space" aria-label="Прыжок">ПРЫЖОК</button><button type="button" class="action" data-key="ControlLeft" aria-label="Бег">БЕГ</button></div></div>
 <div id="rf-finale"><div class="pole"><div class="banner">RGB</div></div><div>RED FOX — УРОВЕНЬ ПРОЙДЕН</div><button id="rf-finale-restart" type="button">ИГРАТЬ СНОВА</button></div>
 <div id="game-over"><strong>GAME OVER</strong><span>МИР 1-1</span><button id="game-over-restart" type="button">ИГРАТЬ СНОВА</button></div>
 <script src="js/util.js"></script>
 <script>
-(function(){const pressed={};const map={ArrowLeft:'LEFT',ArrowRight:'RIGHT',ArrowUp:'UP',ArrowDown:'DOWN',Space:'JUMP',ShiftLeft:'RUN',ShiftRight:'RUN'};
+(function(){const pressed={};const map={ArrowLeft:'LEFT',ArrowRight:'RIGHT',ArrowUp:'UP',ArrowDown:'DOWN',Space:'JUMP',ControlLeft:'RUN',ControlRight:'RUN'};
 function update(e,on){const k=map[e.code]||({37:'LEFT',38:'UP',39:'RIGHT',40:'DOWN',32:'JUMP'}[e.keyCode]);if(!k)return;pressed[k]=on;e.preventDefault();}
 document.addEventListener('keydown',e=>update(e,true),true);document.addEventListener('keyup',e=>update(e,false),true);
 window.addEventListener('blur',()=>Object.keys(pressed).forEach(k=>pressed[k]=false));
