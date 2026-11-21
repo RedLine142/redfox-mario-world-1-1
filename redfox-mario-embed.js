@@ -149,25 +149,32 @@
     function drawBackground(camera, area) {
       if (area === 'bonus') {
         ctx.fillStyle = '#101b45'; ctx.fillRect(0,0,W,H);
-        for (let x=0;x<W;x+=16) { ctx.fillStyle='#263a70';ctx.fillRect(x,24,16,8);ctx.fillRect(x,40,16,8);ctx.fillStyle='#182a59';ctx.fillRect(x+2,26,12,4); }
-        for (let x=0;x<W;x+=32) { ctx.fillStyle='#344b82';ctx.fillRect(x,64,16,8);ctx.fillRect(x+16,80,16,8); }
+        for (let x=0;x<W;x+=16) { ctx.fillStyle='#263a70';ctx.fillRect(x,24,16,8);ctx.fillRect(x,40,16,8); }
         return;
       }
-      ctx.fillStyle = palette.sky; ctx.fillRect(0,0,W,H);
-      const cloudPositions = [[45,35],[165,24],[350,44],[520,31],[710,48],[900,27],[1110,41],[1340,29],[1570,44],[1800,25],[2030,38],[2290,28],[2510,43],[2780,26],[3030,40],[3290,32],[3480,45]];
-      for (const [wx,y] of cloudPositions) { let x = Math.floor(wx - camera*.42) % 310; if (x < -28) x += 310; drawCloud(x,y); }
-      const hills = [[10,48,35],[175,66,47],[390,50,36],[620,70,50],[850,48,35],[1080,64,46],[1320,48,35],[1550,70,50],[1790,48,35],[2030,65,46],[2280,48,35],[2510,70,50],[2760,48,35],[3000,68,48],[3230,48,35]];
-      for (const [wx,w,h] of hills) {
-        const x = wx - camera*.72;
-        if (x < -w || x > W) continue;
-        ctx.fillStyle = palette.hill; ctx.beginPath(); ctx.moveTo(x,208); ctx.lineTo(x+w/2,208-h); ctx.lineTo(x+w,208); ctx.fill();
-        ctx.fillStyle = palette.hillDark; ctx.fillRect(x+w/2-4,208-h+17,3,5); ctx.fillRect(x+w/2+3,208-h+24,3,5);
-      }
-      const bushes = [100,280,560,820,1030,1260,1490,1740,1980,2210,2450,2690,2950,3110];
-      for (const wx of bushes) {
-        const x = wx - camera*.85;
-        if (x < -40 || x > W+30) continue;
-        ctx.fillStyle = '#159044'; ctx.fillRect(x+5,199,25,9); ctx.fillRect(x,203,36,5); ctx.fillRect(x+11,194,12,8);
+      ctx.fillStyle = '#5c94fc'; ctx.fillRect(0,0,W,H);
+    }
+    function drawScenery(game,camera) {
+      for (const t of (game.scenery || [])) {
+        const x=Math.round(t.x-camera), y=t.y, id=t.id;
+        if(x < -16 || x > W) continue;
+        if(id>=128 && id<=133) {
+          ctx.fillStyle='#fff'; 
+          if(id===128||id===131) ctx.fillRect(x+2,y+5,12,8);
+          else if(id===130||id===133) ctx.fillRect(x+2,y+5,12,8);
+          else ctx.fillRect(x,y+3,16,10);
+          ctx.fillStyle='#fff';ctx.fillRect(x+4,y+1,8,5);
+        } else if(id>=2 && id<=4) {
+          ctx.fillStyle='#159447';ctx.fillRect(x+1,y+5,14,10);ctx.fillRect(x+4,y+1,8,7);
+          ctx.fillStyle='#087337';ctx.fillRect(x+7,y+7,2,8);
+        } else if(id>=5 && id<=10) {
+          ctx.fillStyle='#16a34a';ctx.fillRect(x,y+3,16,13);
+          ctx.fillStyle='#08783a';ctx.fillRect(x+2,y+1,12,5);
+          ctx.fillStyle='#d9f5d7';ctx.fillRect(x+4,y+5,2,2);ctx.fillRect(x+10,y+8,2,2);
+        } else if(id===36 || id===37) {
+          ctx.fillStyle='#eee';ctx.fillRect(x+7,y,2,16);
+          if(id===36){ctx.fillStyle='#f5d547';ctx.fillRect(x+8,y+1,8,7);}
+        }
       }
     }
     function drawGround(game, camera) {
@@ -250,7 +257,7 @@
     function render() {
       if (!game) { ctx.fillStyle=palette.sky;ctx.fillRect(0,0,W,H);return; }
       const camera = game.camera;
-      drawBackground(camera,game.area); drawGround(game,camera);
+      drawBackground(camera,game.area); drawScenery(game,camera); drawGround(game,camera);
       for (const block of game.blocks) drawBlock(block,camera);
       for (const stair of game.stairs) {
         const x=Math.round(stair.x-camera); if(x<-18||x>W)continue;
