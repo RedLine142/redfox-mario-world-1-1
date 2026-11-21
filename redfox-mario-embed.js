@@ -2,9 +2,22 @@
   'use strict';
   const ownScript = document.currentScript;
   const scriptUrl = ownScript && ownScript.src ? ownScript.src : '';
-  const root = document.getElementById('pp-mario-game');
-  if (!root || root.dataset.marioMounted === '1') return;
-  root.dataset.marioMounted = '1';
+
+  // The RED FOX editor may insert task markup after executing its scripts.
+  // Wait for the mount point and create it inside the task container if needed.
+  const boot = () => {
+    let root = document.getElementById('pp-mario-game');
+    if (!root) {
+      const host = document.querySelector('.oPos.nobr');
+      if (host) {
+        root = document.createElement('div');
+        root.id = 'pp-mario-game';
+        host.appendChild(root);
+      }
+    }
+    if (!root) return false;
+    if (root.dataset.marioMounted === '1') return true;
+    root.dataset.marioMounted = '1';
 
   const showLoadError = () => {
     root.innerHTML = '<div class="rfm-load-error">НЕ УДАЛОСЬ ЗАГРУЗИТЬ ИГРОВОЙ МОДУЛЬ.<br>ОБНОВИ СТРАНИЦУ ИЛИ ПРОВЕРЬ ДОСТУП К CDN.</div>';
@@ -317,4 +330,20 @@
   coreScript.onload = () => mount(window.RedFoxMarioCore);
   coreScript.onerror = showLoadError;
   document.head.appendChild(coreScript);
+    return true;
+  };
+
+  const start = () => {
+    if (boot()) return;
+    const observer = new MutationObserver(() => {
+      if (boot()) observer.disconnect();
+    });
+    observer.observe(document.documentElement, { childList: true, subtree: true });
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', start, { once: true });
+  } else {
+    start();
+  }
 })();
