@@ -115,10 +115,12 @@ window.input={isDown:key=>!!pressed[key.toUpperCase()],reset:()=>Object.keys(pre
       c.lineWidth=1.5;
       c.strokeRect(fx,fy,48,36);
       c.fillStyle='#17243a';
-      c.font='bold 11px monospace';
+      c.font='bold 8px monospace';
       c.textAlign='center';
       c.textBaseline='middle';
-      c.fillText('RGB',fx+24,fy+18);
+      c.fillText('R(2)',fx+24,fy+7);
+      c.fillText('G(3)',fx+24,fy+18);
+      c.fillText('B(1)',fx+24,fy+29);
       c.restore();
       return;
     }
