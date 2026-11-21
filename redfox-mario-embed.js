@@ -42,7 +42,7 @@ body{display:flex;flex-direction:column;align-items:center;justify-content:cente
 #launch strong{font-size:clamp(24px,5vw,42px);letter-spacing:3px;text-shadow:3px 3px #9b2d24}
 #launch span{font-size:11px;letter-spacing:2px;color:#e3c56f}
 #launch em{margin-top:9px;padding:12px 22px;border:1px solid #ffe8a2;background:#c99b42;color:#101d30;font-style:normal;font-weight:bold;letter-spacing:2px}
-#controls{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;height:64px;padding:6px 8px;background:#09182a;border-top:1px solid #8e713c;font:10px Arial,sans-serif;color:#e8d5a5}
+#game-over{display:none;position:fixed;z-index:20;inset:0;align-items:center;justify-content:center;flex-direction:column;gap:14px;background:#000e;color:#fff0c8;font:bold 22px Arial,sans-serif;letter-spacing:3px;text-align:center}#game-over button{padding:12px 22px;border:1px solid #ffe8a2;background:#c99b42;color:#101d30;font-weight:bold;letter-spacing:2px}#controls{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;height:64px;padding:6px 8px;background:#09182a;border-top:1px solid #8e713c;font:10px Arial,sans-serif;color:#e8d5a5}
 #controls .hint{margin-right:auto;line-height:1.6;letter-spacing:.5px}
 #controls button{width:44px;height:42px;border:1px solid #c5a35d;border-radius:4px;background:linear-gradient(#25496d,#10253e);color:#fff0c8;font-size:17px;font-weight:bold;touch-action:none;user-select:none;-webkit-user-select:none}
 #controls button.action{background:linear-gradient(#9d372d,#5d1e1a);border-color:#e1a06c}
@@ -62,6 +62,7 @@ body{display:flex;flex-direction:column;align-items:center;justify-content:cente
   <button type="button" class="action" data-key="KeyO" aria-label="Бег">B</button>
   <button type="button" data-key="KeyS" aria-label="Вниз">▼</button>
 </div>
+<div id="game-over"><strong>GAME OVER</strong><button id="game-over-restart" type="button">НАЧАТЬ ЗАНОВО</button></div>
 <script>
 (function(){
   const map={ArrowLeft:'KeyA',ArrowRight:'KeyD',ArrowUp:'KeyW',ArrowDown:'KeyS',Space:'KeyP',ShiftLeft:'KeyO',ShiftRight:'KeyO',KeyX:'KeyO'};
@@ -81,7 +82,7 @@ body{display:flex;flex-direction:column;align-items:center;justify-content:cente
   });
 })();
 </script>
-<script type="module" src="js/main.js"></script>
+<script type="module" src="https://cdn.jsdelivr.net/gh/RedLine142/redfox-mario-world-1-1@b72e4653493c1c331b84a2bb28b7c40cce1ed2d6/redfox-mario-main.js"></script>
 </body>
 </html>`;
     frame.srcdoc = doc;
