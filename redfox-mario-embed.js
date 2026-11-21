@@ -30,16 +30,15 @@ canvas{display:block;width:min(100vw,calc((100vh - 96px)*1.0666667));height:auto
 #game-over{display:none;position:fixed;z-index:10;inset:0;align-items:center;justify-content:center;flex-direction:column;gap:14px;background:#000e;color:#fff0c8;font:bold 24px Arial,sans-serif;letter-spacing:3px;text-align:center}
 #game-over button{padding:12px 22px;border:1px solid #ffe8a2;background:#c99b42;color:#101d30;font-weight:bold;letter-spacing:2px}
 @media(max-width:600px){#topbar{height:38px;min-height:38px;font-size:9px;padding:0 8px}#fullscreen-btn{font-size:9px;padding:6px 7px}canvas{width:min(100vw,calc((100vh - 150px)*1.0666667));max-height:calc(100vh - 150px)}#launch{inset:38px 0 104px}#controls{height:104px;min-height:104px;gap:8px;padding:10px 12px;justify-content:space-between}#controls .hint{display:none}#controls .pad,#controls .actions{gap:9px}#controls button{width:64px;height:62px;font-size:25px;border-radius:9px;box-shadow:0 3px 0 #050d18}#controls button.action{min-width:82px;height:62px;padding:0 8px;font-size:13px;letter-spacing:0}#controls button:active{transform:translateY(2px);box-shadow:0 1px 0 #050d18}}
-#rf-finale{display:none;position:absolute;z-index:9;inset:34px 0 62px;align-items:center;justify-content:center;flex-direction:column;gap:24px;background:#7974ff;color:#fff;font:bold 18px monospace;text-align:center;text-shadow:2px 2px #17234a}
-#rf-finale .pole{position:relative;width:12px;height:210px;background:linear-gradient(90deg,#777,#fff 45%,#777);border-radius:3px;box-shadow:2px 2px 0 #333}
-#rf-finale .banner{position:absolute;left:10px;top:14px;width:150px;height:78px;border:3px solid #18243a;background:linear-gradient(to bottom,#ed2436 0 33.33%,#16c85a 33.33% 66.66%,#176bff 66.66% 100%);display:flex;align-items:center;justify-content:center;color:#fff;font:bold 28px monospace;letter-spacing:2px;text-shadow:2px 2px #111;box-shadow:3px 3px 0 #18243a}
-#rf-finale button{padding:13px 24px;border:1px solid #ffe8a2;background:#c99b42;color:#101d30;font-weight:bold;letter-spacing:2px;cursor:pointer}
+#rf-new-game{display:none;position:absolute;z-index:9;inset:34px 0 62px;align-items:flex-end;justify-content:center;padding-bottom:8%;background:transparent;pointer-events:none}
+#rf-new-game button{pointer-events:auto;border:0;background:transparent;color:#fff;font:bold clamp(20px,4vw,34px) monospace;letter-spacing:3px;text-shadow:2px 2px #17234a,0 0 8px #17234a;padding:12px 18px;cursor:pointer;touch-action:manipulation}
+#rf-new-game button:active{transform:scale(.97)}
 </style></head><body>
 <div id="topbar"><span>RED FOX ARCADE</span><span>WORLD 1-1</span><div class="top-actions"><span class="lives" id="rf-lives">MARIO × 3</span><button id="fullscreen-btn" type="button" aria-label="На весь экран">⛶ НА ВЕСЬ ЭКРАН</button></div></div>
 <div id="game-area"></div>
 <button id="launch" type="button"><span>RED FOX ARCADE</span><strong>SUPER MARIO BROS.</strong><em>НАЧАТЬ ИГРУ</em><span>← → ДВИЖЕНИЕ · ПРОБЕЛ ПРЫЖОК · CTRL БЕГ</span></button>
 <div id="controls"><div class="pad"><button type="button" data-key="ArrowLeft" aria-label="Влево">◀</button><button type="button" data-key="ArrowRight" aria-label="Вправо">▶</button></div><div class="hint">← → движение<br>ПРОБЕЛ прыжок · CTRL бег</div><div class="actions"><button type="button" class="action" data-key="Space" aria-label="Прыжок">ПРЫЖОК</button><button type="button" class="action" data-key="ControlLeft" aria-label="Бег">БЕГ</button></div></div>
-<div id="rf-finale"><div class="pole"><div class="banner">RGB</div></div><div>RED FOX — УРОВЕНЬ ПРОЙДЕН</div><button id="rf-finale-restart" type="button">ИГРАТЬ СНОВА</button></div>
+<div id="rf-new-game"><button id="rf-new-game-restart" type="button">НОВАЯ ИГРА</button></div>
 <div id="game-over"><strong>GAME OVER</strong><span>МИР 1-1</span><button id="game-over-restart" type="button">ИГРАТЬ СНОВА</button></div>
 <script src="js/util.js"></script>
 <script>
@@ -89,7 +88,6 @@ window.input={isDown:key=>!!pressed[key.toUpperCase()],reset:()=>Object.keys(pre
       this.vel = [0,0];
       this.pos[1] = 170;
       this.done = true;
-      this.__rfRgbFlag = true;
       window.__rfFinale = true;
       player.noInput = true;
       player.flagging = true;
@@ -97,44 +95,30 @@ window.input={isDown:key=>!!pressed[key.toUpperCase()],reset:()=>Object.keys(pre
       player.acc = [0,0];
       if (music && music.overworld) music.overworld.pause();
       if (music && music.clear) { music.clear.currentTime=0; music.clear.play().catch(()=>{}); }
-      document.getElementById('rf-finale').style.display='flex';
+      document.getElementById('rf-new-game').style.display='flex';
       return;
     }
     this.pos[1] += this.vel[1];
   };
 
   Mario.Flag.prototype.render = function(renderCtx, cameraX, cameraY){
-    if (!this.__rfRgbFlag) {
-      const c=renderCtx||ctx;
-      const fx=Math.round(this.pos[0]-8-cameraX);
-      const fy=Math.round(this.pos[1]-cameraY);
-      c.save();
-      c.fillStyle='#ffffff';
-      c.fillRect(fx,fy,48,36);
-      c.strokeStyle='#26334a';
-      c.lineWidth=1.5;
-      c.strokeRect(fx,fy,48,36);
-      c.fillStyle='#17243a';
-      c.font='bold 8px monospace';
-      c.textAlign='center';
-      c.textBaseline='middle';
-      c.fillText('R(2)',fx+24,fy+7);
-      c.fillText('G(3)',fx+24,fy+18);
-      c.fillText('B(1)',fx+24,fy+29);
-      c.restore();
-      return;
-    }
+    const c=renderCtx||ctx;
     const fx=Math.round(this.pos[0]-8-cameraX);
     const fy=Math.round(this.pos[1]-cameraY);
-    renderCtx.save();
-    renderCtx.fillStyle='#18243a';renderCtx.fillRect(fx,fy,35,21);
-    renderCtx.fillStyle='#ed2436';renderCtx.fillRect(fx+1,fy+1,33,6);
-    renderCtx.fillStyle='#16c85a';renderCtx.fillRect(fx+1,fy+7,33,6);
-    renderCtx.fillStyle='#176bff';renderCtx.fillRect(fx+1,fy+13,33,7);
-    renderCtx.fillStyle='#fff';renderCtx.font='bold 8px monospace';
-    renderCtx.textAlign='center';renderCtx.textBaseline='middle';
-    renderCtx.fillText('RGB',fx+17,fy+10);
-    renderCtx.restore();
+    c.save();
+    c.fillStyle='#ffffff';
+    c.fillRect(fx,fy,48,36);
+    c.strokeStyle='#26334a';
+    c.lineWidth=1.5;
+    c.strokeRect(fx,fy,48,36);
+    c.fillStyle='#17243a';
+    c.font='bold 8px monospace';
+    c.textAlign='center';
+    c.textBaseline='middle';
+    c.fillText('R(2)',fx+24,fy+7);
+    c.fillText('G(3)',fx+24,fy+18);
+    c.fillText('B(1)',fx+24,fy+29);
+    c.restore();
   };
 })();
 </script>
@@ -146,9 +130,9 @@ const die=Mario.Player.prototype.die;
 Mario.Player.prototype.die=function(){if(this.__rfCountedDeath)return;this.__rfCountedDeath=true;window.__rfLives=Math.max(0,window.__rfLives-1);paint();die.call(this);};
 const update=Mario.Player.prototype.update;
 Mario.Player.prototype.update=function(dt,vX){if(window.__rfGameOver)return;if(this.dying&&window.__rfLives<=0&&this.dying<=dt){window.__rfGameOver=true;this.dying=9999;this.vel=[0,0];overlay.style.display='flex';return;}update.call(this,dt,vX);};
-window.__rfRestartGame=function(){window.__rfLives=3;window.__rfGameOver=false;window.__rfFinale=false;paint();overlay.style.display='none';document.getElementById('rf-finale').style.display='none';player=new Mario.Player(level.playerPos);level.loader.call();gameTime=0;vX=0;input.reset();if(music&&music.overworld){music.overworld.currentTime=0;music.overworld.play().catch(()=>{});}};
+window.__rfRestartGame=function(){window.__rfLives=3;window.__rfGameOver=false;window.__rfFinale=false;paint();overlay.style.display='none';document.getElementById('rf-new-game').style.display='none';player=new Mario.Player(level.playerPos);level.loader.call();gameTime=0;vX=0;input.reset();if(music&&music.overworld){music.overworld.currentTime=0;music.overworld.play().catch(()=>{});}};
 document.getElementById('game-over-restart').addEventListener('click',window.__rfRestartGame);
-document.getElementById('rf-finale-restart').addEventListener('click',window.__rfRestartGame);
+document.getElementById('rf-new-game-restart').addEventListener('click',window.__rfRestartGame);
 paint();
 })();
 </script>
