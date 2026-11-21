@@ -6,7 +6,7 @@ function mount(){
  if(!root)return false;
  if(root.dataset.marioMounted==='reruns-1-1')return true;
  root.dataset.marioMounted='reruns-1-1';root.innerHTML='';root.style.cssText='width:100%;max-width:980px;margin:14px auto;line-height:normal;';
- const frame=document.createElement('iframe');frame.title='RED FOX — Super Mario Bros. World 1-1';frame.setAttribute('allow','autoplay; fullscreen');frame.setAttribute('loading','eager');frame.style.cssText='display:block;width:100%;height:clamp(430px,calc(75vw + 70px),790px);border:2px solid #bd9447;border-radius:6px;background:#000;';
+ const frame=document.createElement('iframe');frame.title='RED FOX — Super Mario Bros. World 1-1';frame.setAttribute('allow','autoplay; fullscreen');frame.setAttribute('allowfullscreen','');frame.setAttribute('loading','eager');frame.style.cssText='display:block;width:100%;height:clamp(430px,calc(75vw + 70px),790px);border:2px solid #bd9447;border-radius:6px;background:#000;';
  const doc = `<!doctype html>
 <html lang="ru"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
@@ -16,7 +16,7 @@ function mount(){
 *{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#070d16}
 body{display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:Arial,sans-serif}
 #topbar{height:34px;min-height:34px;width:100%;display:flex;align-items:center;justify-content:space-between;padding:0 12px;background:#09182a;border-bottom:1px solid #98743c;color:#f5dfaa;font:bold 12px monospace;letter-spacing:1px}
-#topbar .lives{color:#fff}
+#topbar .lives{color:#fff}#topbar .top-actions{display:flex;align-items:center;gap:10px}#fullscreen-btn{border:1px solid #b89552;border-radius:4px;background:#18334f;color:#fff0c8;padding:5px 9px;font:bold 10px Arial,sans-serif;letter-spacing:.5px;cursor:pointer;white-space:nowrap;touch-action:manipulation}#fullscreen-btn:active{background:#315477}html:fullscreen,html:fullscreen body{width:100%;height:100%;background:#070d16}html:fullscreen body{min-height:100dvh}html:fullscreen canvas{max-height:calc(100dvh - 96px)}@media(max-width:600px){html:fullscreen canvas{max-height:calc(100dvh - 142px)}}
 canvas{display:block;width:min(100vw,calc((100vh - 96px)*1.0666667));height:auto;max-width:100%;max-height:calc(100vh - 96px);object-fit:contain;image-rendering:pixelated;background:#7974ff}
 #game-area{display:flex;align-items:center;justify-content:center;flex:1;min-height:0;width:100%;overflow:hidden}
 #launch{position:absolute;z-index:5;inset:34px 0 62px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;border:0;background:#07162bd9;color:#fff0c8;text-align:center;cursor:pointer}
@@ -29,13 +29,13 @@ canvas{display:block;width:min(100vw,calc((100vh - 96px)*1.0666667));height:auto
 #controls button.action{background:linear-gradient(#9d372d,#5d1e1a);border-color:#e1a06c}
 #game-over{display:none;position:fixed;z-index:10;inset:0;align-items:center;justify-content:center;flex-direction:column;gap:14px;background:#000e;color:#fff0c8;font:bold 24px Arial,sans-serif;letter-spacing:3px;text-align:center}
 #game-over button{padding:12px 22px;border:1px solid #ffe8a2;background:#c99b42;color:#101d30;font-weight:bold;letter-spacing:2px}
-@media(max-width:600px){#topbar{height:30px;min-height:30px;font-size:10px}canvas{width:min(100vw,calc((100vh - 142px)*1.0666667));max-height:calc(100vh - 142px)}#launch{inset:30px 0 104px}#controls{height:104px;min-height:104px;gap:8px;padding:10px 12px;justify-content:space-between}#controls .hint{display:none}#controls .pad,#controls .actions{gap:9px}#controls button{width:64px;height:62px;font-size:25px;border-radius:9px;box-shadow:0 3px 0 #050d18}#controls button.action{min-width:82px;height:62px;padding:0 8px;font-size:13px;letter-spacing:0}#controls button:active{transform:translateY(2px);box-shadow:0 1px 0 #050d18}}
+@media(max-width:600px){#topbar{height:38px;min-height:38px;font-size:9px;padding:0 8px}#fullscreen-btn{font-size:9px;padding:6px 7px}canvas{width:min(100vw,calc((100vh - 150px)*1.0666667));max-height:calc(100vh - 150px)}#launch{inset:38px 0 104px}#controls{height:104px;min-height:104px;gap:8px;padding:10px 12px;justify-content:space-between}#controls .hint{display:none}#controls .pad,#controls .actions{gap:9px}#controls button{width:64px;height:62px;font-size:25px;border-radius:9px;box-shadow:0 3px 0 #050d18}#controls button.action{min-width:82px;height:62px;padding:0 8px;font-size:13px;letter-spacing:0}#controls button:active{transform:translateY(2px);box-shadow:0 1px 0 #050d18}}
 #rf-finale{display:none;position:absolute;z-index:9;inset:34px 0 62px;align-items:center;justify-content:center;flex-direction:column;gap:24px;background:#7974ff;color:#fff;font:bold 18px monospace;text-align:center;text-shadow:2px 2px #17234a}
 #rf-finale .pole{position:relative;width:12px;height:210px;background:linear-gradient(90deg,#777,#fff 45%,#777);border-radius:3px;box-shadow:2px 2px 0 #333}
 #rf-finale .banner{position:absolute;left:10px;top:14px;width:150px;height:78px;border:3px solid #18243a;background:linear-gradient(to bottom,#ed2436 0 33.33%,#16c85a 33.33% 66.66%,#176bff 66.66% 100%);display:flex;align-items:center;justify-content:center;color:#fff;font:bold 28px monospace;letter-spacing:2px;text-shadow:2px 2px #111;box-shadow:3px 3px 0 #18243a}
 #rf-finale button{padding:13px 24px;border:1px solid #ffe8a2;background:#c99b42;color:#101d30;font-weight:bold;letter-spacing:2px;cursor:pointer}
 </style></head><body>
-<div id="topbar"><span>RED FOX ARCADE</span><span>WORLD 1-1</span><span class="lives" id="rf-lives">MARIO × 3</span></div>
+<div id="topbar"><span>RED FOX ARCADE</span><span>WORLD 1-1</span><div class="top-actions"><span class="lives" id="rf-lives">MARIO × 3</span><button id="fullscreen-btn" type="button" aria-label="На весь экран">⛶ НА ВЕСЬ ЭКРАН</button></div></div>
 <div id="game-area"></div>
 <button id="launch" type="button"><span>RED FOX ARCADE</span><strong>SUPER MARIO BROS.</strong><em>НАЧАТЬ ИГРУ</em><span>← → ДВИЖЕНИЕ · ПРОБЕЛ ПРЫЖОК · CTRL БЕГ</span></button>
 <div id="controls"><div class="pad"><button type="button" data-key="ArrowLeft" aria-label="Влево">◀</button><button type="button" data-key="ArrowRight" aria-label="Вправо">▶</button></div><div class="hint">← → движение<br>ПРОБЕЛ прыжок · CTRL бег</div><div class="actions"><button type="button" class="action" data-key="Space" aria-label="Прыжок">ПРЫЖОК</button><button type="button" class="action" data-key="ControlLeft" aria-label="Бег">БЕГ</button></div></div>
@@ -136,6 +136,10 @@ paint();
 <script src="js/game.js"></script>
 <script>
 (function(){const area=document.getElementById('game-area');const canvas=document.querySelector('canvas');if(canvas)area.appendChild(canvas);
+const fsButton=document.getElementById('fullscreen-btn');
+function syncFullscreen(){const active=!!(document.fullscreenElement||document.webkitFullscreenElement);fsButton.textContent=active?'⤢ ВЫЙТИ':'⛶ НА ВЕСЬ ЭКРАН';fsButton.setAttribute('aria-label',active?'Выйти из полноэкранного режима':'На весь экран');}
+fsButton.addEventListener('click',async function(){try{if(document.fullscreenElement||document.webkitFullscreenElement){if(document.exitFullscreen)await document.exitFullscreen();else if(document.webkitExitFullscreen)document.webkitExitFullscreen();}else{const target=document.documentElement;if(target.requestFullscreen)await target.requestFullscreen();else if(target.webkitRequestFullscreen)target.webkitRequestFullscreen();else{fsButton.textContent='НЕТ ПОДДЕРЖКИ';setTimeout(syncFullscreen,1600);return;}}}catch(err){fsButton.textContent='НЕДОСТУПНО';setTimeout(syncFullscreen,1600);}});
+document.addEventListener('fullscreenchange',syncFullscreen);document.addEventListener('webkitfullscreenchange',syncFullscreen);
 const launch=document.getElementById('launch');launch.addEventListener('click',function(){launch.style.display='none';if(window.music&&music.overworld)music.overworld.play().catch(()=>{});});
 document.querySelectorAll('[data-key]').forEach(button=>{const code=button.dataset.key;const send=(type,e)=>{if(e)e.preventDefault();document.dispatchEvent(new KeyboardEvent(type,{code,bubbles:true,cancelable:true}));};
 button.addEventListener('pointerdown',e=>{if(button.setPointerCapture)button.setPointerCapture(e.pointerId);send('keydown',e);});
