@@ -5,68 +5,68 @@
   if (root) root.RedFoxMarioCore = api;
 })(typeof globalThis !== 'undefined' ? globalThis : this, function () {
   const TILE = 16;
-  const FLOOR = 208;
+  const FLOOR = 192;
   const WIDTH = 3584;
   const clone = value => JSON.parse(JSON.stringify(value));
 
-  function buildLevel() {
-    const gaps = [[69, 72], [139, 143], [160, 164]];
-    const ground = [];
-    for (let tx = 0; tx < WIDTH / TILE; tx++) {
-      if (!gaps.some(([a, b]) => tx >= a && tx < b)) ground.push({ x: tx * TILE, y: FLOOR, w: TILE, h: 32, kind: 'ground' });
+  // Decoded original NES World 1-1 metatile map (223 x 13).
+  // Grid was extracted by running the original AreaParserCore against the
+  // World 1-1 area data; values are original metatile IDs.
+  const WORLD_1_1_GRID = [[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,128,129,130,0,0,0,0,0,0,0,0,0,0,0,0,0,0,128,129,129,130,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,128,129,130,0,0,0,0,0,0,0,0,0,0,0,0,0,0,128,129,129,130,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,128,129,130,0,0,0,0,0,0,0,0,0,0,0,0,0,0,128,129,129,130,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,128,129,130,0,0,0,0,0,0,0,0,0,0,0,0,0,0,128,129,129,130,0,0,0,0,0,0,0,0,0,0,0,0,0,0,36,0,0,0,0,0,0,0,0,0,0,0,0,128,129,130,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,128,129,130,0,0,0,0,0,0,0,0,131,132,133,0,0,0,0,0,128,129,129,129,130,0,0,0,0,131,132,132,133,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,128,129,130,0,0,0,0,0,0,0,0,131,132,133,0,0,0,0,0,128,129,129,129,130,0,0,0,0,131,132,132,133,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,128,129,130,0,0,0,0,0,0,0,0,131,132,133,0,0,0,0,0,128,129,129,129,130,0,0,0,0,131,132,132,133,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,128,129,130,0,0,0,0,0,0,0,0,131,132,133,0,0,0,0,0,128,129,129,129,130,0,0,0,0,131,132,132,133,0,0,0,0,0,0,0,0,0,0,0,0,0,0,37,0,128,129,130,0,0,0,0,0,0,0,0,131,132,133,0,0,0,0,0,128,129,129,129],[0,0,0,0,0,0,0,0,131,132,133,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,131,132,132,132,133,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,131,132,133,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,131,132,132,132,133,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,131,132,133,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,131,132,132,132,133,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,131,132,133,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,131,132,132,132,133,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,37,0,131,132,133,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,131,132,132,132],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,192,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,81,81,81,81,81,81,81,81,0,0,0,81,81,81,192,0,0,0,0,0,0,0,0,0,0,0,0,0,0,193,0,0,0,0,0,0,0,0,0,0,0,81,81,81,0,0,0,0,81,192,192,81,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,97,97,0,0,0,0,0,0,0,0,37,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,97,97,97,0,0,0,0,0,0,0,0,37,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,97,97,97,97,0,0,0,0,0,0,0,0,37,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,96,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,97,97,97,97,97,0,0,0,0,0,0,0,0,37,0,0,0,0,69,69,69,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,192,0,0,0,81,193,81,192,81,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,18,19,0,0,0,0,0,0,0,0,0,16,17,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,81,193,81,0,0,0,0,0,0,0,0,0,0,0,0,0,0,88,0,0,0,0,0,81,87,0,0,0,0,192,0,0,192,0,0,192,0,0,0,0,0,81,0,0,0,0,0,0,0,0,0,0,81,81,0,0,0,0,0,0,97,0,0,97,0,0,0,0,0,0,0,0,0,0,97,97,0,0,97,0,0,0,0,0,0,0,0,0,0,0,0,81,81,192,81,0,0,0,0,0,0,0,0,0,0,0,0,97,97,97,97,97,97,0,0,0,0,0,0,0,0,37,0,0,0,0,70,71,72,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,7,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,18,19,0,0,0,0,0,0,20,21,0,0,7,0,0,0,0,0,0,20,21,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,97,97,0,0,97,97,0,0,0,0,7,0,0,0,97,97,97,0,0,97,97,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,97,97,97,97,97,97,97,0,0,0,0,7,0,0,0,37,0,0,0,69,73,73,73,69,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,5,6,8,0,0,0,0,0,0,0,0,0,0,0,0,0,7,0,0,0,0,0,0,0,0,0,0,18,19,0,0,0,0,0,0,0,0,20,21,0,0,0,0,0,0,20,21,0,5,6,8,0,0,0,0,0,20,21,0,0,0,0,0,0,7,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5,6,8,0,0,0,0,0,0,0,0,0,0,0,0,0,7,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,97,97,97,0,0,97,97,97,0,0,5,6,8,0,97,97,97,97,0,0,97,97,97,0,0,0,7,0,18,19,0,0,0,0,0,0,0,0,0,0,0,0,0,0,18,19,0,97,97,97,97,97,97,97,97,0,0,0,5,6,8,0,0,37,0,0,0,71,71,74,71,71,0,0,7,0,0,0,0,0,0,0,0,0,0,0,0,0],[5,6,10,9,8,0,0,0,0,0,0,2,3,3,3,4,5,6,8,0,0,0,0,2,3,4,0,0,20,21,0,0,0,0,0,0,0,0,20,21,0,2,3,3,4,0,20,21,5,6,10,9,8,0,0,0,0,20,21,2,3,3,3,4,5,6,8,0,0,0,0,2,3,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,3,3,4,0,0,0,5,6,10,9,8,0,0,0,0,0,0,2,3,3,3,4,5,6,8,0,0,0,0,2,3,4,0,0,0,0,0,0,0,0,0,0,0,0,97,97,97,97,3,3,97,97,97,97,5,6,10,9,97,97,97,97,97,0,0,97,97,97,97,4,5,6,8,20,21,0,0,2,3,4,0,0,0,0,0,0,0,0,0,20,21,97,97,97,97,97,97,97,97,97,0,0,5,6,10,9,8,0,97,0,0,0,71,71,75,82,71,4,5,6,8,0,0,0,0,2,3,4,0,0,0,0,0],[84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,0,0,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,0,0,0,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,0,0,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84],[84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,0,0,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,0,0,0,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,0,0,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84,84]];
+  const WORLD_1_1_ENTITIES = [{"type":"goomba","id":6,"page":0,"col":6,"row":11,"x_in_page":6,"hard_only":false},{"type":"goomba","id":6,"page":1,"col":24,"row":11,"x_in_page":8,"hard_only":false},{"type":"goomba_duo_lo","id":55,"page":2,"col":38,"row":3,"x_in_page":6,"hard_only":false},{"type":"goomba","id":6,"page":5,"col":80,"row":3,"x_in_page":0,"hard_only":false},{"type":"goomba","id":6,"page":5,"col":82,"row":3,"x_in_page":2,"hard_only":false},{"type":"goomba_duo_lo","id":55,"page":6,"col":100,"row":11,"x_in_page":4,"hard_only":false},{"type":"koopa_green","id":0,"page":6,"col":107,"row":11,"x_in_page":11,"hard_only":false},{"type":"goomba_duo_lo","id":55,"page":7,"col":117,"row":11,"x_in_page":5,"hard_only":false},{"type":"goomba_duo_lo","id":55,"page":7,"col":127,"row":11,"x_in_page":15,"hard_only":false},{"type":"goomba_duo_lo","id":55,"page":8,"col":131,"row":11,"x_in_page":3,"hard_only":false},{"type":"goomba_duo_lo","id":55,"page":11,"col":177,"row":11,"x_in_page":1,"hard_only":false}];
+  function decodeWorld11Metatiles(grid) {
+    const ground = [], blocks = [], pipes = [], stairs = [], coins = [], scenery = [];
+    const width = grid[0].length * TILE;
+    const cell = (x,y) => grid[y] && grid[y][x] !== undefined ? grid[y][x] : 0;
+    // Ground is represented by the original ground metatile rows, preserving pits.
+    let run = null;
+    for (let x=0; x<grid[0].length; x++) {
+      const solid = cell(x,12) === 84;
+      if (solid && run === null) run = x;
+      if ((!solid || x === grid[0].length-1) && run !== null) {
+        const stop = solid && x === grid[0].length-1 ? x+1 : x;
+        ground.push({x:run*TILE,y:192,w:(stop-run)*TILE,h:48,kind:'ground'});
+        run = null;
+      }
     }
-    const blocks = [];
-    const add = (tx, ty, kind, reward = null) => blocks.push({ x: tx * TILE, y: ty * TILE, w: TILE, h: TILE, kind, reward, used: false, broken: false });
-    // The iconic opening: isolated question block, paired brick/question formation,
-    // raised coin formations, then the repeating pipe / pit / block rhythm.
-    add(16, 10, 'question', 'coin');
-    add(20,10,'question','mushroom'); add(21,10,'brick'); add(22,10,'brick');
-    add(21,9,'question','coin'); add(22,9,'brick'); add(22,8,'brick');
-    [28, 30, 31, 32].forEach(tx => add(tx, 6, tx === 30 ? 'question' : 'brick', tx === 30 ? 'coin' : null));
-    add(38, 10, 'question', 'coin'); add(39, 10, 'brick'); add(40, 10, 'brick');
-    [46, 47, 48, 49, 50].forEach(tx => add(tx, 6, tx === 47 || tx === 49 ? 'question' : 'brick', tx === 47 || tx === 49 ? 'coin' : null));
-    [55, 56, 57, 58, 59].forEach(tx => add(tx, 10, tx === 57 ? 'question' : 'brick', tx === 57 ? 'coin' : null));
-    [64, 65, 66, 67, 68].forEach(tx => add(tx, 6, tx === 66 ? 'question' : 'brick', tx === 66 ? 'coin' : null));
-    [75, 76, 77, 78].forEach(tx => add(tx, 10, tx === 76 ? 'question' : 'brick', tx === 76 ? 'coin' : null));
-    [83, 84, 85, 86].forEach(tx => add(tx, 6, tx === 84 ? 'question' : 'brick', tx === 84 ? 'coin' : null));
-    // Later 1-1 block clusters, staircases and the final approach.
-    [100, 101, 102].forEach(tx => add(tx, 10, 'brick'));
-    [104, 105, 106].forEach(tx => add(tx, 6, tx === 105 ? 'question' : 'brick', tx === 105 ? 'coin' : null));
-    [112, 113, 114, 115].forEach(tx => add(tx, 10, 'brick'));
-    [121, 122, 123, 124].forEach(tx => add(tx, 6, tx === 122 ? 'question' : 'brick', tx === 122 ? 'coin' : null));
-    // Hidden 1-Up between the fourth pipe and the first pit.
-    blocks.push({ x: 1024, y: 160, w: 16, h: 16, kind: 'hidden', reward: '1up', used: false, broken: false });
-    // Mid-course low ten-coin brick, star brick and the second question-block formation.
-    add(116,10,'brick','tencoin'); add(119,10,'brick'); add(120,10,'brick','star');
-    add(128,6,'brick'); add(129,6,'question','coin'); add(130,6,'brick');
-    add(129,10,'question','flower');
-    [134,135,136,137,138].forEach(tx => add(tx,10,tx===136?'question':'brick',tx===136?'coin':null));
-    // Two hard-block pyramids; the second is split by a pit.
-    for (let row=0; row<4; row++) for (let col=row; col<7-row; col++) {
-      add(145+col,10-row,'hard');
+    const pipeCells = new Map();
+    for (let y=0; y<12; y++) for (let x=0; x<grid[0].length; x++) {
+      const id=cell(x,y), px=x*TILE, py=y*TILE;
+      if (id===194 || id===195) coins.push({x:px+5,y:py+2,w:7,h:12,alive:true});
+      else if (id===192 || id===193 || (id>=81 && id<=96)) {
+        const kind = id===192 ? 'question' : id===193 ? 'question' :
+          (id===95 || id===96) ? 'hidden' : 'brick';
+        const reward = id===192 ? 'coin' : id===193 ? 'mushroom' :
+          id===85 || id===90 ? 'vine' : id===86 || id===91 ? 'star' :
+          id===87 || id===92 ? 'tencoin' : id===88 || id===93 ? '1up' :
+          id===95 ? 'coin' : id===96 ? '1up' : null;
+        blocks.push({x:px,y:py,w:TILE,h:TILE,kind,reward,used:false,broken:false,metatile:id});
+      } else if (id===97) {
+        stairs.push({x:px,y:py,w:TILE,h:TILE,kind:'stair',metatile:id});
+      } else if (id>=16 && id<=21) {
+        const key=x;
+        if (!pipeCells.has(key)) pipeCells.set(key,{x:px,top:py,bottom:py,kind:'pipe',enterable:false});
+        const p=pipeCells.get(key); p.top=Math.min(p.top,py);p.bottom=Math.max(p.bottom,py);
+      } else if (id!==0 && id!==84 && id!==36 && id!==37) {
+        scenery.push({x:px,y:py,w:TILE,h:TILE,id});
+      }
     }
-    for (let row=0; row<4; row++) for (let col=0; col<7; col++) {
-      if (col < row || col >= 7-row) add(160+col,10-row,'hard');
+    for (const p of pipeCells.values()) pipes.push({x:p.x,y:p.top,w:32,h:p.bottom-p.top+TILE,kind:'pipe',enterable:false});
+    // Convert original actor records (page/column/row) to world coordinates.
+    const enemies=[];
+    for (const actor of WORLD_1_1_ENTITIES) {
+      const x=actor.col*TILE, y=actor.row*TILE;
+      const add=(type,dx=0)=>enemies.push({id:enemies.length,x:x+dx,y:192-TILE,w:16,h:16,vx:-0.55,alive:true,type,state:'walk'});
+      if (actor.type==='koopa_green') add('koopa');
+      else if (actor.type==='goomba_duo_lo') { add('goomba'); add('goomba',TILE); }
+      else add('goomba');
     }
-    [178,179,180,181].forEach(tx => add(tx,10,tx===181?'question':'brick',tx===181?'coin':null));
-    const pipes = [
-      { x: 448, height: 2 }, { x: 608, height: 3 }, { x: 752, height: 4 },
-      { x: 912, height: 2 }, { x: 2592, height: 2 }, { x: 3136, height: 2 }
-    ].map(p => ({ ...p, y: FLOOR - p.height * TILE, w: 32, h: p.height * TILE, kind: 'pipe', enterable: p.x === 752 }));
-    const coins = [];
-    const addCoin = (tx, ty) => coins.push({ x: tx * TILE + 5, y: ty * TILE + 2, w: 7, h: 12, alive: true });
-    [[22,8],[23,8],[24,8],[29,4],[30,4],[31,4],[47,4],[48,4],[49,4],[57,8],[58,8],[59,8],[66,4],[67,4],[68,4],[76,8],[77,8],[84,4],[85,4],[106,4],[107,4],[108,4],[122,4],[123,4],[129,4],[130,4],[131,4]].forEach(([x,y]) => addCoin(x,y));
-    const enemyXs = [12, 23, 39, 53, 64, 79, 88, 94, 104, 112, 128, 136, 151, 178, 183, 188];
-    const enemies = enemyXs.map((tx, i) => ({ id: i, x: tx * TILE, y: FLOOR - TILE, w: 16, h: 16, vx: -0.55, alive: true, type: 'goomba', state: 'walk' }));
-    enemies.push({ id:16, x:146*TILE, y:FLOOR-TILE, w:16, h:16, vx:-0.55, alive:true, type:'koopa', state:'walk' });
-    const stairs = [];
-    for (let i = 0; i < 8; i++) stairs.push({ x: 3200 + i * TILE, y: FLOOR - (i + 1) * TILE, w: TILE, h: (i + 1) * TILE, kind: 'stair' });
-    return {
-      width: WIDTH, floor: FLOOR, ground, blocks, pipes, coins, enemies, stairs,
-      pits: gaps.map(([a,b]) => ({ x:a*TILE, w:(b-a)*TILE })),
-      flagpole: { x: 3472, y: 64, h: 144 }, castle: { x: 3504, y: 144, w: 48, h: 64 }
-    };
+    const flagCell=[];
+    for(let y=0;y<12;y++)for(let x=0;x<grid[0].length;x++)if(cell(x,y)===36||cell(x,y)===37)flagCell.push({x,y,id:cell(x,y)});
+    const flagX=flagCell.length?Math.min(...flagCell.map(v=>v.x))*TILE:width-112;
+    return {width,floor:192,ground,blocks,pipes,coins,scenery,enemies,stairs,pits:[],flagpole:{x:flagX,y:64,h:128},castle:{x:width-80,y:144,w:48,h:48}};
   }
+  function buildLevel() { return decodeWorld11Metatiles(WORLD_1_1_GRID); }
   const LEVEL = buildLevel();
   function getLevelData() { return clone(LEVEL); }
   function createGame() {
@@ -75,16 +75,16 @@
       status: 'playing', area: 'main', score: 0, coins: 0, lives: 3, time: 400, camera: 0,
       player: { x: 32, y: FLOOR - 16, w: 12, h: 16, vx: 0, vy: 0, onGround: true, power: 'small', facing: 1, dead: false, invulnerable: 0, coyote: 0, deathFrames: 0 },
       blocks: level.blocks, ground: level.ground, pipes: level.pipes, stairs: level.stairs,
-      coinsWorld: level.coins, enemies: level.enemies, powerups: [], fireballs: [], fireCooldown: 0, particles: [],
+      coinsWorld: level.coins, scenery: level.scenery, enemies: level.enemies, powerups: [], fireballs: [], fireCooldown: 0, particles: [],
       pits: level.pits, flagpole: level.flagpole, castle: level.castle, deathHandled: false, prevDown: false, prevJump: false, jumpBuffer: 0, bonusUsed: false
     };
-    game.mainArea = { ground:game.ground, blocks:game.blocks, pipes:game.pipes, stairs:game.stairs, coinsWorld:game.coinsWorld, enemies:game.enemies, powerups:game.powerups, pits:game.pits, flagpole:game.flagpole, castle:game.castle };
+    game.mainArea = { ground:game.ground, blocks:game.blocks, pipes:game.pipes, stairs:game.stairs, coinsWorld:game.coinsWorld, scenery:game.scenery, enemies:game.enemies, powerups:game.powerups, pits:game.pits, flagpole:game.flagpole, castle:game.castle };
     return game;
   }
   function enterBonus(game) {
     game.area = 'bonus'; game.camera = 0;
     game.ground = Array.from({length:32},(_,i)=>({x:i*TILE,y:FLOOR,w:TILE,h:32,kind:'ground'}));
-    game.blocks = [];
+    game.blocks = []; game.scenery = [];
     game.pipes = [{x:480,y:FLOOR-32,w:32,h:32,height:2,kind:'pipe',enterable:false}];
     game.stairs = [];
     game.coinsWorld = Array.from({length:19},(_,i)=>({x:76+(i%10)*34,y:i<10?112:152,w:7,h:12,alive:true}));
@@ -96,7 +96,7 @@
     const main = game.mainArea;
     game.area='main';
     game.ground=main.ground;game.blocks=main.blocks;game.pipes=main.pipes;game.stairs=main.stairs;
-    game.coinsWorld=main.coinsWorld;game.enemies=main.enemies;game.powerups=main.powerups;game.pits=main.pits;
+    game.coinsWorld=main.coinsWorld;game.scenery=main.scenery;game.enemies=main.enemies;game.powerups=main.powerups;game.pits=main.pits;
     game.flagpole=main.flagpole;game.castle=main.castle;
     const entrance=game.pipes.find(pipe=>pipe.enterable);if(entrance)entrance.enterable=false;
     Object.assign(game.player,{x:2624,y:FLOOR-game.player.h,vx:0,vy:0,onGround:true,invulnerable:90,coyote:0});
