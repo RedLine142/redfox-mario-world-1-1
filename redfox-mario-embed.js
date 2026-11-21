@@ -57,6 +57,65 @@ window.input={isDown:key=>!!pressed[key.toUpperCase()],reset:()=>Object.keys(pre
 <script src="js/prop.js"></script><script src="js/player.js"></script><script src="js/flag.js"></script>
 <script src="js/levels/level.js"></script><script src="js/levels/11.js"></script>
 <script>
+// RED FOX finale: Mario's automatic jump and the RGB flagpole banner.
+(function(){
+  const originalFlagUpdate = Mario.Flag.prototype.update;
+  const originalFlagRender = Mario.Flag.prototype.render;
+  const originalPlayerUpdate = Mario.Player.prototype.update;
+
+  Mario.Player.prototype.flag = function(){
+    this.noInput = true;
+    this.flagging = true;
+    this.acc = [0,0];
+    this.vel = [0,0];
+    this.__rfFlagJumpStarted = Date.now();
+    this.__rfFlagJumpY = this.pos[1];
+  };
+
+  Mario.Player.prototype.update = function(dt, cameraX){
+    originalPlayerUpdate.call(this, dt, cameraX);
+    if (this.__rfFlagJumpStarted && !this.exiting) {
+      const p = Math.min(1, (Date.now() - this.__rfFlagJumpStarted) / 900);
+      this.pos[1] = this.__rfFlagJumpY - Math.sin(p * Math.PI) * 48;
+      if (p >= 1) {
+        this.pos[1] = this.__rfFlagJumpY;
+        this.__rfFlagJumpStarted = 0;
+      }
+    }
+  };
+
+  Mario.Flag.prototype.update = function(dt){
+    originalFlagUpdate.call(this, dt);
+    if (this.done) this.__rfRgbFlag = true;
+  };
+
+  Mario.Flag.prototype.render = function(renderCtx, x, y, cameraX, cameraY){
+    if (!this.__rfRgbFlag) {
+      originalFlagRender.call(this, renderCtx, x, y, cameraX, cameraY);
+      return;
+    }
+    const fx = Math.round(this.pos[0] - 8 - cameraX);
+    const fy = Math.round(this.pos[1] - cameraY);
+    renderCtx.save();
+    renderCtx.imageSmoothingEnabled = false;
+    renderCtx.fillStyle = '#151515';
+    renderCtx.fillRect(fx, fy, 34, 19);
+    renderCtx.fillStyle = '#f20d25';
+    renderCtx.fillRect(fx + 1, fy + 1, 32, 5);
+    renderCtx.fillStyle = '#16c75b';
+    renderCtx.fillRect(fx + 1, fy + 6, 32, 6);
+    renderCtx.fillStyle = '#176bff';
+    renderCtx.fillRect(fx + 1, fy + 12, 32, 6);
+    renderCtx.fillStyle = '#ffffff';
+    renderCtx.font = 'bold 8px monospace';
+    renderCtx.textAlign = 'center';
+    renderCtx.textBaseline = 'middle';
+    renderCtx.fillText('RGB', fx + 17, fy + 9);
+    renderCtx.restore();
+  };
+})();
+</script>
+<script>
 (function(){
 window.__rfLives=3;window.__rfGameOver=false;const lives=document.getElementById('rf-lives');const overlay=document.getElementById('game-over');
 function paint(){lives.textContent='MARIO × '+window.__rfLives;}
