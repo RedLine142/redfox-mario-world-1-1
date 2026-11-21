@@ -10,7 +10,7 @@ function mount(){
  const doc = `<!doctype html>
 <html lang="ru"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<base href="https://reruns.github.io/mario/">
+<base href="https://cdn.jsdelivr.net/gh/reruns/mario@08074829a16830051143339ea05b5082a5c43b2f/">
 <title>RED FOX — Mario World 1-1</title>
 <style>
 *{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#070d16}
