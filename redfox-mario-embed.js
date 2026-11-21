@@ -323,7 +323,7 @@
     root.dataset.marioReady='1';
   };
 
-  if (window.RedFoxMarioCore) { mount(window.RedFoxMarioCore); return; }
+  if (window.RedFoxMarioCore) { mount(window.RedFoxMarioCore); return true; }
   if (!scriptUrl) { showLoadError(); return; }
   const coreScript = document.createElement('script');
   coreScript.src = new URL('mario-core.js', scriptUrl).href;
